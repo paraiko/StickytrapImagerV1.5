@@ -66,7 +66,7 @@ class Settings:
     project_name = "default-project"   # project name
     sample_name = "default-sample"  # sample name
     project_sample_path = os.path.join(safe_path, project_name, sample_name)
-    prj_fn_add = True  # setting to add the project ande sample name to the filename (default = yes)
+    prj_fn_add = False  # setting to add the project ande sample name to the filename (default = yes)
     append_files = True  # setting increment platenames when existing files are present in the folder
 
     #############################
