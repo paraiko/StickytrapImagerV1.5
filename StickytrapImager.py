@@ -154,11 +154,19 @@ class Settings:
     #                     [90, 175], [160, 175],[230, 175], [300, 175], [370, 175],
     #                     [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
 
+    ##### 5*5
     xy_big_st_coords = [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
                         [370, 85], [300, 85], [230, 85], [160, 85], [90, 85],
                         [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
                         [370, 175], [300, 175], [230, 175], [160, 175], [90, 175],
                         [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
+
+    ##### 6 x 5
+    # xy_big_st_coords = [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40], [20, 40],
+    #                     [370, 85], [300, 85], [230, 85], [160, 85], [90, 85], [20, 85],
+    #                     [370, 130], [300, 130], [230, 130], [160, 130], [90, 130], [20, 130],
+    #                     [370, 175], [300, 175], [230, 175], [160, 175], [90, 175], [20, 175],
+    #                     [370, 220], [300, 220], [230, 220], [160, 220], [90, 220], [20, 220]]
 
     # xy_st_coords = [[399, 0], [399, 75], [399, 150], [399, 225], [399, 300], [399, 375]]
 
@@ -318,7 +326,7 @@ class SettingsTab:
                                                 state="True",
                                                 command=self.upd_prjfn_add_check)
         self.prj_fn_add_check.grid(row=2, column=0, columnspan=2, pady=5, sticky=W)
-        self.prj_fn_add.set(True)
+        self.prj_fn_add.set(False)
 
         # row 2
         wpframe = ttk.LabelFrame(frame, text="Well-plate settings: ", padding="10 10 10 10")
@@ -670,7 +678,7 @@ class Stickytrap:
 
         #cv2.imwrite(os.path.join(self.s.project_sample_path, save_fn), crop)
         self.stpic_list.append(os.path.join(self.s.safe_temp_path, tempfn))
-        st_thumb = cv2.resize(crop, [60, 40], cv2.INTER_NEAREST)
+        st_thumb = cv2.resize(crop, [200, 150], cv2.INTER_NEAREST)
         cv2.imwrite(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn), st_thumb)
         self.stthumb_list.append(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn))
 
@@ -679,8 +687,9 @@ class Stickytrap:
         save_fn = ""
         if self.s.prj_fn_add:
             save_fn = self.s.project_name + "_" + self.s.sample_name + "_"
-        if self.qr != "":
-            save_fn = save_fn + self.qr + "_"
+        ## remove qr for now
+        #if self.qr != "":
+        #    save_fn = save_fn + self.qr + "_"
 
         for i in range(self.maxcap):
             pos_str = "st_pos_" + str(i).zfill(2)
@@ -737,21 +746,52 @@ class Stickytrap:
         st_layout.grid(column=0, row=0, sticky=(N, W, E, S))
         root.update_idletasks()
 
+        rows = ["A", "B", "C", "D", "E"]
+        cols = ["1", "2", "3", " 4", "5"]
+
         r = 0
-        for pic in self.stthumb_list:
-            # label plates
-            #plate_string = "postion: " + str(i + 1)
-            #ttk.Label(wp_layout, text=plate_string).grid(row=r, column=c, pady=10)
-            # r += 1
-            # row header with column titles
-                        # header
-            ttk.Label(st_layout, text=str(r)).grid(row=r, column=0)
-            fname = self.stthumb_list[r]
-            pimg = ImageTk.PhotoImage(Image.open(fname))
-            label = ttk.Label(st_layout, image=pimg)
-            label.image = pimg
-            label.grid(row=r, column=1)
+        c = 0
+
+        c1 = 1
+        for col in cols:
+            ttk.Label(st_layout, text=col).grid(row=r, column=c1)
+            c1 += 1
+        r += 1
+        for row in rows:
+            # header
+            ttk.Label(st_layout, text=row).grid(row=r, column=c)
+            c += 1
+            for col in cols:
+                fname = self.stthumb_list[pic_ctr]
+                pimg = ImageTk.PhotoImage(Image.open(fname))
+                label = ttk.Label(st_layout, image=pimg)
+                label.image = pimg
+                label.grid(row=r, column=c)
+                pic_ctr += 1
+                # print("## pictr: " + str(pic_ctr) + " " + fname)
+                c += 1
+            c = 0
             r += 1
+
+
+        pic_ctr = 0
+        #
+        #
+        # r = 0
+        # for pic in self.stthumb_list:
+        #     # label plates
+        #     #plate_string = "postion: " + str(i + 1)
+        #     #ttk.Label(wp_layout, text=plate_string).grid(row=r, column=c, pady=10)
+        #     # r += 1
+        #     # row header with column titles
+        #                 # header
+        #     ttk.Label(st_layout, text=str(r)).grid(row=r, column=0)
+        #     fname = self.stthumb_list[r]
+        #     pimg = ImageTk.PhotoImage(Image.open(fname))
+        #     label = ttk.Label(st_layout, image=pimg)
+        #     label.image = pimg
+        #     label.grid(row=r, column=1)
+        #     r += 1
 
     def goto_position(self, x, y, f):
 
@@ -1220,7 +1260,7 @@ class Wellplate:
         c = 0
         for i in range(self.nr_wp):
             # label plates
-            plate_string = "postion: " + str(i + 1)
+            plate_string = "position: " + str(i + 1)
             ttk.Label(wp_layout, text=plate_string).grid(row=r, column=c, pady=10)
             # r += 1
             # row header with column titles
