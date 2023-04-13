@@ -148,10 +148,16 @@ class Settings:
     #                   [300, 85], [370, 85]]
 
     caps_per_big_st = 25
-    xy_big_st_coords =  [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
-                        [90, 85], [160, 85], [230, 85], [300, 85], [370, 85],
+    # xy_big_st_coords =  [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
+    #                     [90, 85], [160, 85], [230, 85], [300, 85], [370, 85],
+    #                     [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
+    #                     [90, 175], [160, 175],[230, 175], [300, 175], [370, 175],
+    #                     [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
+
+    xy_big_st_coords = [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
+                        [370, 85], [300, 85], [230, 85], [160, 85], [90, 85],
                         [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
-                        [90, 175], [160, 175],[230, 175], [300, 175], [370, 175],
+                        [370, 175], [300, 175], [230, 175], [160, 175], [90, 175],
                         [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
 
     # xy_st_coords = [[399, 0], [399, 75], [399, 150], [399, 225], [399, 300], [399, 375]]
@@ -718,10 +724,10 @@ class Stickytrap:
 
     def create_empty_st_list(self):
         stthumb_list = list()
-        stthumb_list.append("assets/st/empty_1_h250px.png")
-        stthumb_list.append("assets/st/empty_2_h250px.png")
-        stthumb_list.append("assets/st/empty_3_h250px.png")
-        stthumb_list.append("assets/st/empty_4_h250px.png")
+        #stthumb_list.append("assets/st/empty_1_h250px.png")
+        #stthumb_list.append("assets/st/empty_2_h250px.png")
+        #stthumb_list.append("assets/st/empty_3_h250px.png")
+        #stthumb_list.append("assets/st/empty_4_h250px.png")
 
         return stthumb_list
 
