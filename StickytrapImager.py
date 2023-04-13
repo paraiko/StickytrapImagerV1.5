@@ -141,9 +141,19 @@ class Settings:
     # default stickytraps no overlap
     caps_per_st = 4
     nr_crops_st = 1
-    xy_st_coords = [[390, 0], [390, 77], [390, 154], [390, 231], [390, 308], [390, 385]]
+    xy_st_coords = [[300, 40],[300, 85],[300, 130]]
 
-    xy_big_st_coords = [[300, 40],[300, 85]]
+    #caps_per_big_st = 4
+    #xy_big_st_coords = [[370, 40], [300, 40],
+    #                   [300, 85], [370, 85]]
+
+    caps_per_big_st = 25
+    xy_big_st_coords =  [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
+                        [90, 85], [160, 85], [230, 85], [300, 85], [370, 85],
+                        [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
+                        [90, 175], [160, 175],[230, 175], [300, 175], [370, 175],
+                        [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
+
     # xy_st_coords = [[399, 0], [399, 75], [399, 150], [399, 225], [399, 300], [399, 375]]
 
     # xy_f_calibration = dict (1000 = 12, 2000 = 24, 3000 = 36, 4000 = 48, 5000 = 6000 = 72 )
@@ -518,25 +528,24 @@ class Stickytrap:
         self.pbval = 0
 
 
-
-
-        self.xdist = 400  #image distance in mm
-        self.ydist = 250  #image distance in mm
+        #self.xdist = 400  #image distance in mm
+        #self.ydist = 250  #image distance in mm
         #self.dpi = 3600
         #self.xsize = 51.948  #xsize of picture in mm (7360px) @3600 dpi
         #self.ysize = 34.669  #ysize of picture in mm (4912px) @3600 dpi
-        self.xsize = 77.851  # xsize of picture in mm (7360px) @2400 dpi
-        self.ysize = 51.957  # ysize of picture in mm (4912px) @2400 dpi
-        self.overlap = 0.2  #(fraction overlap)
+        #self.xsize = 77.851  # xsize of picture in mm (7360px) @2400 dpi
+        #self.ysize = 51.957  # ysize of picture in mm (4912px) @2400 dpi
+        #self.overlap = 0.2  #(fraction overlap)
 
-        self.xmove = int(self.xsize - self.overlap * self.xsize)
-        self.ymove = int(self.ysize - self.overlap * self.ysize)
+        #self.xmove = int(self.xsize - self.overlap * self.xsize)
+        #self.ymove = int(self.ysize - self.overlap * self.ysize)
 
-        self.maxcapx = int(self.xdist / self.xmove)+1
-        self.maxcapy= int(self.ydist / self.ymove)+1
-        print (f' capx: {self.maxcapx}, capy: {self.maxcapy}')
+        #self.maxcapx = int(self.xdist / self.xmove)+1
+       # self.maxcapy= int(self.ydist / self.ymove)+1
+        #print (f' capx: {self.maxcapx}, capy: {self.maxcapy}')
 
-        self.maxcap = self.maxcapx * self.maxcapy  # 4 pict without overlap, 5 up to ~30 mm overlap
+        self.st_coords = self.s.xy_big_st_coords
+        self.maxcap = self.s.caps_per_big_st
         self.x = 0
         self.y = 0
 
@@ -570,6 +579,7 @@ class Stickytrap:
 
             self.pbval = 0
             self.pb['value'] = self.pbval
+            self.pb['maximum'] = self.maxcap
             self.strstp_button.configure(text='Stop', command=self.stop)
             self.stpic_list.clear()
             self.stthumb_list.clear()
@@ -595,31 +605,17 @@ class Stickytrap:
         self.home_xy()
         self.toggle_tab_state("normal")
 
-    def capture_sequence(self, self.coords, nextcap=0):
-        global interrupt
-        if interrupt:
-            # home the table
-            self.home_xy()
-            self.toggle_tab_state("normal")
-            return
-
-        self.pbval += 1
-        self.pb['value'] = self.pbval
-
     def capture_next(self, nextcap=0):
 
-
-
         if nextcap < self.maxcap:
-            if nextcap % self.maxcapx == 0:
-                print (f'move y: nextcap: {nextcap}')
-                self.y += self.ymove
-                self.x = 0
-            else:
-                self.x += self.xmove
 
+            self.pbval += 1
+            self.pb['value'] = self.pbval
+            self.x = self.st_coords[nextcap][0]
+            self.y = self.st_coords[nextcap][1]
             # root.after(1000)
             print("nextcap: " + str(nextcap) + " xy" + str(self.x) + " " + str(self.y))
+
             tempfn = "temp_st_pos_" + str(nextcap).zfill(2) + ".jpg"
             self.move_and_capture(self.x, self.y, self.s.xy_f_speed, tempfn)
             self.crop_save_temp_st(self.ctr, tempfn)
@@ -668,7 +664,7 @@ class Stickytrap:
 
         #cv2.imwrite(os.path.join(self.s.project_sample_path, save_fn), crop)
         self.stpic_list.append(os.path.join(self.s.safe_temp_path, tempfn))
-        st_thumb = cv2.resize(crop, [300, 200], cv2.INTER_NEAREST)
+        st_thumb = cv2.resize(crop, [60, 40], cv2.INTER_NEAREST)
         cv2.imwrite(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn), st_thumb)
         self.stthumb_list.append(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn))
 
@@ -710,9 +706,10 @@ class Stickytrap:
             # write the output stitched image to disk
             #cv2.imwrite("stitch.jpg", stitched)
             # display the output stitched image to our screen
-            stitched = cv2.resize(stitched, [375, 1000], cv2.INTER_NEAREST)
-            cv2.imshow("Stitched", stitched)
-            cv2.waitKey()
+            #stitched = cv2.resize(stitched, [375, 1000], cv2.INTER_NEAREST)
+            cv2.imwrite(os.path.join(self.s.project_sample_path, "stitch.jpg"), stitched)
+            #cv2.imshow("Stitched", stitched)
+            #cv2.waitKey()
         # otherwise the stitching failed, likely due to not enough keypoints)
         # being detected
         else:
