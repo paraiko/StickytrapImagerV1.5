@@ -844,22 +844,26 @@ class Move:
         self.scale_y_lbl['text'] = "y-axis (mm): "
 
         # # Grid row 1
-        self.x = Spinbox(moveframe, from_=0.00, to=self.s.xy_x_max, increment=.01, textvariable=self.num_x)
-        self.y = Spinbox(moveframe, from_=0.00, to=self.s.xy_x_max, increment=.01, textvariable=self.num_y)
-        self.x.grid(column=0, row=1, sticky=W)
-        self.y.grid(column=1, row=1, sticky=W)
-        # self.x = ttk.Scale(
-        #     moveframe, orient=HORIZONTAL, length=self.s.xy_x_max,
-        #     from_=0.0, to=self.s.xy_x_max, variable=self.num_x,
-        #     command=self.update_scale_x_lbl)
-        # self.y = ttk.Scale(
-        #     moveframe, orient=VERTICAL, length=self.s.xy_y_max,
-        #     from_=0.0, to=self.s.xy_y_max, variable=self.num_y,
-        #     command=self.update_scale_y_lbl )
-        #self.y.grid(column=0, row=1)
-        #self.x.grid(column=1, row=1, sticky=NW)
-        #self.y.set(0)
-        #self.x.set(0)
+
+        ###### ---> dangerous fine grained control with spinbox for development, no boundary check
+        # self.x = Spinbox(moveframe, from_=0.00, to=self.s.xy_x_max, increment=.01, textvariable=self.num_x)
+        # self.y = Spinbox(moveframe, from_=0.00, to=self.s.xy_x_max, increment=.01, textvariable=self.num_y)
+        # self.x.grid(column=0, row=1, sticky=W)
+        # self.y.grid(column=1, row=1, sticky=W)
+        ############################################
+
+        self.x = ttk.Scale(
+            moveframe, orient=HORIZONTAL, length=self.s.xy_x_max,
+            from_=0.0, to=self.s.xy_x_max, variable=self.num_x,
+            command=self.update_scale_x_lbl)
+        self.y = ttk.Scale(
+            moveframe, orient=VERTICAL, length=self.s.xy_y_max,
+            from_=0.0, to=self.s.xy_y_max, variable=self.num_y,
+            command=self.update_scale_y_lbl )
+        self.y.grid(column=0, row=1)
+        self.x.grid(column=1, row=1, sticky=NW)
+        self.y.set(0)
+        self.x.set(0)
 
         self.console = Text(moveframe, bg='black', fg='white', width=40)
         self.console.grid(row=1, column=3, rowspan=10)
@@ -883,13 +887,13 @@ class Move:
 
     def update_scale_y_lbl(self, val):
         val = float(val)
-        val = round(val, 2)
+        val = round(val, 1)
         val = str(val)
         self.scale_y_lbl['text'] = "y-axis: " + val + " mm"
 
     def update_scale_x_lbl(self, val):
         val = float(val)
-        val = round(val, 2)
+        val = round(val, 1)
         val = str(val)
         self.scale_x_lbl['text'] = "x-axis at: " + val + " mm"
 
@@ -899,8 +903,8 @@ class Move:
                                                      "Cannot continue.")
         else:
             self.print_gcode('G28\n')
-            self.x.set(value=0.00)
-            self.y.set(value=0.00)
+            self.x.set(value=0.0)
+            self.y.set(value=0.0)
 
     def goto_position(self):
 
