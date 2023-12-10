@@ -1,19 +1,27 @@
 [tool.poetry]
-name = "insectimager"
+name = "StickytrapImager"
 version = "0.1.0"
 description = ""
 authors = ["A.S. Boerema"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "3.10.13"
 opencv-contrib-python = "^4.5.5.64"
 pyserial = "^3.5"
 gphoto2 = "^2.3.3"
-Pillow = "^9.1.0"
 numpy = "^1.22.3"
 Nuitka = "^0.7.7"
-pyimagej = "^1.4.1"
+scikit-image = "^0.20.0"
+matplotlib = "^3.7.1"
+pyzbar = "^0.1.9"
+pillow = "^10.1.0"
+imagej = "^0.3.1"
+scyjava = "^1.9.1"
+pyjnius = "^1.6.1"
+imglyb = "^2.1.0"
+scipy = "^1.11.3"
+
 
 [build-system]
 requires = ["poetry-core"]

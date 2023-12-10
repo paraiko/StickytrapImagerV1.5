@@ -97,8 +97,8 @@ class Settings:
     # xy_usb_product_ID = 0x7523 #HL-340 USB-Serial adapter
 
     # xytable dimensions (mm)
-    xy_x_max = 399.00
-    xy_y_max = 399.00
+    xy_x_max = 409.00
+    xy_y_max = 760.00
     # speed setting, officially F = in mm/(or inch) per min
     # in practice, based on calibration it seems to be mm/min roughly divided by 1.4
     # ( max speed probably roughly 100 mm/sec = around F8300)
@@ -147,28 +147,26 @@ class Settings:
     #xy_big_st_coords = [[370, 40], [300, 40],
     #                   [300, 85], [370, 85]]
 
-    caps_per_big_st = 25
-    # xy_big_st_coords =  [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
-    #                     [90, 85], [160, 85], [230, 85], [300, 85], [370, 85],
-    #                     [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
-    #                     [90, 175], [160, 175],[230, 175], [300, 175], [370, 175],
-    #                     [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
+    caps_per_big_st = 21
 
-    ##### 5*5
-    xy_big_st_coords = [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40],
-                        [370, 85], [300, 85], [230, 85], [160, 85], [90, 85],
-                        [370, 130], [300, 130], [230, 130], [160, 130], [90, 130],
-                        [370, 175], [300, 175], [230, 175], [160, 175], [90, 175],
-                        [370, 220], [300, 220], [230, 220], [160, 220], [90, 220]]
 
-    ##### 6 x 5
-    # xy_big_st_coords = [[370, 40], [300, 40], [230, 40], [160, 40], [90, 40], [20, 40],
-    #                     [370, 85], [300, 85], [230, 85], [160, 85], [90, 85], [20, 85],
-    #                     [370, 130], [300, 130], [230, 130], [160, 130], [90, 130], [20, 130],
-    #                     [370, 175], [300, 175], [230, 175], [160, 175], [90, 175], [20, 175],
-    #                     [370, 220], [300, 220], [230, 220], [160, 220], [90, 220], [20, 220]]
+    #xy_big_st_coords = [[0, 0], [0, 100], [0, 200], [0, 300], [0, 400],[0, 500], [0, 600],
+    #                    [65, 600], [65, 500], [65, 400], [65, 300], [65, 200], [65, 100], [65, 0],
+    #                    [130, 0], [130, 100], [130, 200], [130, 300], [130, 400], [130, 500], [130, 600]]
 
-    # xy_st_coords = [[399, 0], [399, 75], [399, 150], [399, 225], [399, 300], [399, 375]]
+    xy_big_st_coords = [[0, 0], [75, 0], [140, 0],
+                        [0, 100], [75, 100], [150, 100],
+                        [0, 200], [75, 200], [150, 200],
+                        [0, 300], [75, 300], [150, 300],
+                        [0, 400], [75, 400], [150, 400],
+                        [0, 500], [75, 500], [150, 500],
+                        [0, 600], [75, 600], [150, 600]]
+
+
+    #                    [0, 130], [100, 130], [200, 130], [300, 130], [400, 130],
+    #                    [400, 195], [300, 195], [200, 195], [100, 195], [0, 195],
+    #                    [0, 260], [100, 260], [200, 260], [300, 260], [400, 260]]
+
 
     # xy_f_calibration = dict (1000 = 12, 2000 = 24, 3000 = 36, 4000 = 48, 5000 = 6000 = 72 )
 
@@ -259,6 +257,9 @@ class Settings:
     def initialize_xy(self):
         # set gcode coordinate system to mm (not inch)
         self.ser.write(bytes("G21\n", 'utf-8'))
+        # perform homing cycle
+
+
 
 
 class SettingsTab:
@@ -460,6 +461,7 @@ class SettingsTab:
                                      "Did you home the XY table?\n\n")
         if answer:
             self.s.ser, succes = self.s.open_serial_connection()
+            self.s.ser.write(bytes('$H\n', 'utf-8'))
             if succes:
                 self.connect_xy_button['state'] = DISABLED
                 self.connect_xy_button['text'] = "XY-table connected"
@@ -665,7 +667,7 @@ class Stickytrap:
 
         pos_str = "st_pos_" + str(capnr).zfill(2) + ".jpg"
         temp_image = cv2.imread(os.path.join(self.s.safe_temp_path, tempfn))
-        temp_image = cv2.rotate(temp_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        #temp_image = cv2.rotate(temp_image, cv2.ROTATE_90_COUNTERCLOCKWISE)
         qr = self.detect_qr(temp_image)
         if qr != "":
             self.qr = qr
@@ -746,8 +748,12 @@ class Stickytrap:
         st_layout.grid(column=0, row=0, sticky=(N, W, E, S))
         root.update_idletasks()
 
-        rows = ["A", "B", "C", "D", "E"]
-        cols = ["1", "2", "3", " 4", "5"]
+        #rows = ["A", "B", "C", "D", "E"]
+        #cols = ["1", "2", "3", " 4", "5"]
+        rows = ["1", "2", "3", "4", "5", "6", "7"]
+        cols = ["A", "B", "C"]
+        nr_rows = 3
+        nr_cols = 6
 
         r = 0
         c = 0
@@ -809,7 +815,12 @@ class Stickytrap:
         file = self.s.cam.capture_and_get()
         file.save(os.path.join(self.s.safe_temp_path, picname))
 
-        # trick to empty the camera cue before nextaction (see github thread from entangle devloper .....).
+        ## rotate the file on the disk for correct orientation
+        temp_image = cv2.imread(os.path.join(self.s.safe_temp_path, picname))
+        temp_image = cv2.rotate(temp_image, cv2.ROTATE_90_CLOCKWISE)
+        cv2.imwrite(os.path.join(self.s.safe_temp_path, picname), temp_image)
+
+        # trick to empty the camera cue before nextaction (see github thread from entangle developer .....).
         # Prevents camera crashes.
         self.s.cam.empty_cam_cue()
 
@@ -903,6 +914,7 @@ class Move:
                                                      "Cannot continue.")
         else:
             self.print_gcode('G28\n')
+            #self.print_gcode('$H\n')
             self.x.set(value=0.0)
             self.y.set(value=0.0)
 
