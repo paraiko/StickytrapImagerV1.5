@@ -98,13 +98,13 @@ class Settings:
 
     # xytable dimensions (mm)
     xy_x_max = 409.00
-    xy_y_max = 760.00
+    xy_y_max = 759.00
     # speed setting, officially F = in mm/(or inch) per min
     # in practice, based on calibration it seems to be mm/min roughly divided by 1.4
     # ( max speed probably roughly 100 mm/sec = around F8300)
     xy_f_speed = 8300
     xy_f_corr_fact = 1.4
-    cam_capture_delay = 2
+    cam_capture_delay = 3
 
     # ccordinates for different imaging positions in mm per wp type:
     # 6W
