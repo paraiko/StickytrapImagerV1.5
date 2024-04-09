@@ -4,7 +4,6 @@ Created on Sun Apr 16 2022
 @author: Ate
 @version: 1.0
 """
-import datetime
 import webbrowser
 from tkinter import *
 from tkinter import ttk
@@ -19,7 +18,6 @@ import time
 import gphoto2 as gp
 import cv2
 import re
-from datetime import date as date
 
 
 class Main:
@@ -65,7 +63,7 @@ class Settings:
     # the path were imaged wells can be saved
     safe_path = os.path.join(Path.home(), "InsectImager/data/")
     safe_temp_path = os.path.join(safe_path, ".tempfiles/")
-    project_name = "IWM24_meadowbird"   # project name
+    project_name = "default-project"   # project name
     sample_name = "default-sample"  # sample name
     project_sample_path = os.path.join(safe_path, project_name, sample_name)
     prj_fn_add = False  # setting to add the project ande sample name to the filename (default = yes)
@@ -106,7 +104,7 @@ class Settings:
     # ( max speed probably roughly 100 mm/sec = around F8300)
     xy_f_speed = 8300
     xy_f_corr_fact = 1.4
-    cam_capture_delay = 1 #Wachttijd voor de camera nog een foto neemt
+    cam_capture_delay = 2 #Wachttijd voor de camera nog een foto neemt
 
     # ccordinates for different imaging positions in mm per wp type:
     # 6W
@@ -149,48 +147,28 @@ class Settings:
     #xy_big_st_coords = [[370, 40], [300, 40],
     #                   [300, 85], [370, 85]]
 
-    caps_per_big_st = 6
+    caps_per_big_st = 42
 
 
     #xy_big_st_coords = [[0, 0], [0, 100], [0, 200], [0, 300], [0, 400],[0, 500], [0, 600],
     #                    [65, 600], [65, 500], [65, 400], [65, 300], [65, 200], [65, 100], [65, 0],
     #                    [130, 0], [130, 100], [130, 200], [130, 300], [130, 400], [130, 500], [130, 600]]
 
-    # originele Michella coordinaten
-    xy_big_st_coords = [[5, 0], [75, 0], [145, 0],
-    			[5, 107], [75, 107], [145, 107]]
-     			#[5, 209], [75, 209], [145, 209],
-     			#[5, 311], [75, 311], [145, 311],
-     			#[5, 413], [75, 413], [145, 413],
-    			#[5, 515], [75, 515], [145, 515],
-     			#[5, 618], [75, 618], [145, 618],
-                #[260, 618], [330, 618], [400, 618],
-               # [260, 515], [330, 515], [400, 515],
-               # [260, 413], [330, 413], [400, 413],
-               # [260, 311], [330, 311], [400, 311],
-                #[260, 209], [330, 209], [400, 209],
-               # [260, 107], [330, 107], [400, 107],
-               # [260, 0], [330, 0], [400, 0]]
-
-    st_posnames = ["A_01","A_02","A_03","A_04","A_05","A_06"]
-    # xy_big_st_coords = [[5, 0], [75, 0]]
-    #st_posnames = ["A_01","A_02","A_03","A_04","A_05","A_06","A_07","A_08","A_09","A_10","A_11","A_12","A_13","A_14","A_15","A_16","A_17","A_18","A_19","A_20","A_21", "B_19","B_20","B_21","B_16","B_17","B_18","B_13","B_14","B_15","B_10","B_11","B_12","B_07","B_08","B_09","B_04","B_05","B_06","B_01","B_02","B_03"]
-    #xy_big_st_coords = [[5, 0], [75, 0]]
-    #st_posnames = ["A_01", "A_02"]
-
-
-
-
-     			
-    #xy_big_st_coords = [[5, 2],
-    #			[5, 107],
-    #			[5, 209], 
-    #			[5, 311],  
-    #			[5, 413],
-    #			[5, 515], 
-    #			[5, 618]]
-
-
+    ## originele Michella coordinaten
+    xy_big_st_coords = [[0, 0], [75, 0], [150, 0],
+                        [0, 100], [75, 100], [150, 100],
+                        [0, 200], [75, 200], [150, 200],
+                        [0, 300], [75, 300], [150, 300],
+                        [0, 400], [75, 400], [150, 400],
+                        [0, 500], [75, 500], [150, 500],
+                        [0, 600], [75, 600], [150, 600],
+                        [258, 600], [333, 600], [408, 600],
+                        [258, 500], [333, 500], [408, 500],
+                        [258, 400], [333, 400], [408, 400],
+                        [258, 300], [333, 300], [408, 300],
+                        [258, 200], [333, 200], [408, 200],
+                        [258, 100], [333, 100], [408, 100],
+                        [258, 0], [333, 0], [408, 0]]
                         #dat bredere blok is de xy-pos voor de 2e plakval
                   
     
@@ -299,25 +277,9 @@ class SettingsTab:
 
     def __init__(self, parent, settings):
 
-
-
-        #self.s.sample_name.set(str(datestr))
-
-
-
         # assign settings object to store variables in the app
         self.s = settings
         self.s.create_safe_path()
-
-        # create autosamplename based on date and incremental nr.
-        datestr = date.today()
-        nextnr = 0
-        nextnrstr= str(nextnr).zfill(3)
-        os.path.join(self.s.safe_path, self.s.project_sample_path)
-        for root, dirs, files in os.walk(os.path.join(self.s.safe_path, self.s.project_sample_path), topdown=False):
-            for name in dirs:
-                print(os.path.join(root, name))
-
 
         # row 0
         frame = ttk.Frame(parent, padding="10 10 10 10")
@@ -362,8 +324,7 @@ class SettingsTab:
         self.sp_name_entry = ttk.Entry(spframe, textvariable=self.sp_name, validate='key',
                                        validatecommand=self.validate_entry_wrapper)
         self.sp_name_entry.grid(row=1, column=1)
-        #self.sp_name.set(self.s.sample_name)
-        self.sp_name.set(datestr)
+        self.sp_name.set(self.s.sample_name)
 
         def callback_upd_sp_name(var, index, mode):
             self.upd_sp_name()
@@ -612,7 +573,6 @@ class Stickytrap:
 
         self.st_coords = self.s.xy_big_st_coords
         self.maxcap = self.s.caps_per_big_st
-        self.pos_names = self.s.st_posnames
         self.x = 0
         self.y = 0
 
@@ -747,8 +707,7 @@ class Stickytrap:
         for i in range(self.maxcap):
             pos_str = "st_pos_" + str(i).zfill(2)
             temp_fn = "temp_" + pos_str + ".jpg"
-            #save2_fn = save_fn + pos_str + ".jpg"
-            save2_fn = save_fn + self.pos_names[i] + ".jpg"
+            save2_fn = save_fn + pos_str + ".jpg"
             os.rename(os.path.join(self.s.safe_temp_path, temp_fn),
                       os.path.join(self.s.project_sample_path, save2_fn))
 
