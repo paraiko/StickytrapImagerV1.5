@@ -4,7 +4,6 @@ Created on Sun Apr 16 2022
 @author: Ate
 @version: 1.0
 """
-import datetime
 import webbrowser
 from tkinter import *
 from tkinter import ttk
@@ -30,18 +29,18 @@ class Main:
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
         tabcontrol = ttk.Notebook(mainframe)
         sett = ttk.Frame(tabcontrol)
-        wps = ttk.Frame(tabcontrol)
+        #wps = ttk.Frame(tabcontrol)
         st = ttk.Frame(tabcontrol)
         mvt = ttk.Frame(tabcontrol)
         hlp = ttk.Frame(tabcontrol)
 
         tabcontrol.add(sett, text='settings')
-        tabcontrol.add(wps, text='well-plates')
+        #tabcontrol.add(wps, text='well-plates')
         tabcontrol.add(st, text='sticky-traps')
         tabcontrol.add(mvt, text='move xy-table')
         tabcontrol.add(hlp, text='help/about')
         def update_tabs():
-            self.Wellplate = Wellplate(wps, settings)
+            #self.Wellplate = Wellplate(wps, settings)
             self.Stickytrap = Stickytrap(st, settings)
         tabcontrol.bind('<<NotebookTabChanged>>', lambda e: update_tabs())
         tabcontrol.grid(column=0, row=0)
@@ -56,8 +55,8 @@ class Main:
             child.grid_configure(padx=5, pady=5)
         root.mainloop()
 
-
 class Settings:
+
     """Class to hold settings variables to be re-used at other parts of the app"""
 
     nr_wp = 1  # number of wellplates to scan
@@ -65,11 +64,31 @@ class Settings:
     # the path were imaged wells can be saved
     safe_path = os.path.join(Path.home(), "InsectImager/data/")
     safe_temp_path = os.path.join(safe_path, ".tempfiles/")
-    project_name = "IWM24_meadowbird"   # project name
-    sample_name = "default-sample"  # sample name
-    project_sample_path = os.path.join(safe_path, project_name, sample_name)
+    project_name = "0033_RUG_ML"   # project name
+    sample_name = str(date.today())  # sample name
+
     prj_fn_add = False  # setting to add the project ande sample name to the filename (default = yes)
     append_files = True  # setting increment platenames when existing files are present in the folder
+
+    # create autosamplename based on date and incremental nr.
+    subdirectories = []
+    for dirpath, dirnames, filenames in os.walk("/home/paraiko/InsectImager/data/0033_RUG_Michella/2023-12-21"):
+        # Append the current subdirectory to the list
+        subdirectories.append(dirnames)
+    subdir_string = subdirectories[0]
+    subdir_numbers = [int(num) for num in subdir_string if num.isdigit()]
+
+    #check if numbered subdir exists, if not create 001, if yes increment and create
+    if len (subdir_numbers) == 0:
+        sample_nr = "001"
+    else:
+        s_nr = max(subdir_numbers) + 1
+        sample_nr = str(s_nr).zfill(3)
+        #print(sample_nr)
+
+    project_sample_path = os.path.join(safe_path, project_name, sample_name, sample_nr)
+
+
 
     #############################
     # camera details            #
@@ -100,123 +119,50 @@ class Settings:
 
     # xytable dimensions (mm)
     xy_x_max = 409.00
-<<<<<<< HEAD
-    xy_y_max = 640.00
-=======
     xy_y_max = 759.00
->>>>>>> 3247c144a928055a7ba1cf0399c19e81673f801c
     # speed setting, officially F = in mm/(or inch) per min
     # in practice, based on calibration it seems to be mm/min roughly divided by 1.4
     # ( max speed probably roughly 100 mm/sec = around F8300)
     xy_f_speed = 8300
     xy_f_corr_fact = 1.4
-<<<<<<< HEAD
-    cam_capture_delay = 1 #Wachttijd voor de camera nog een foto neemt
-=======
     cam_capture_delay = 3
->>>>>>> 3247c144a928055a7ba1cf0399c19e81673f801c
-
-    # ccordinates for different imaging positions in mm per wp type:
-    # 6W
-    # Greiner plates
-    caps_perwp_6w = 6
-    nr_crops_6w = 1
-    xy_6w_coords = [[7, 0], [7, 39], [7, 78], [46, 0], [46, 39], [46, 78],
-                    [92, 0], [92, 39], [92, 78], [131, 0], [131, 39], [131, 78],
-                    [177, 0], [177, 39], [177, 78], [216, 0], [216, 39], [216, 78],
-                    [262, 0], [262, 39], [262, 78], [301, 0], [301, 39], [301, 78]]
-
-    # 12W
-    # Greiner plates
-    caps_perwp_12w = 6
-    nr_crops_12w = 2
-    xy_12w_coords = [[0, 10], [0, 62], [27, 10], [27, 62], [54, 10], [54, 62],
-                     [87, 10], [87, 62], [113, 10], [113, 62], [139, 10], [139, 62],
-                     [173, 10], [173, 62], [198, 10], [198, 62], [223, 10], [223, 62],
-                     [257, 10], [257, 62], [283, 10], [283, 62], [309, 10], [309, 62]]
-
-    crop_offsets_px_12w = []
-
-    # 24W = 6
-    caps_perwp_24w = 6
-    nr_crops_24w = 4
-    # co star plates (+ greiner)
-    xy_24w_coords = [[8, 0], [8, 39], [8, 78], [47, 0], [47, 39], [47, 78],
-                     [93, 0], [93, 39], [93, 78], [132, 0], [132, 39], [132, 78],
-                     [178, 0], [178, 39], [178, 78], [217, 0], [217, 39], [217, 78],
-                     [263, 0], [263, 39], [263, 78], [302, 0], [302, 39], [302, 78]]
-
-    # 48W
 
     # default stickytraps no overlap
     caps_per_st = 4
     nr_crops_st = 1
     xy_st_coords = [[300, 40],[300, 85],[300, 130]]
 
-    #caps_per_big_st = 4
-    #xy_big_st_coords = [[370, 40], [300, 40],
-    #                   [300, 85], [370, 85]]
+    caps_per_big_st = 42
 
-    caps_per_big_st = 6
-
-
-    #xy_big_st_coords = [[0, 0], [0, 100], [0, 200], [0, 300], [0, 400],[0, 500], [0, 600],
-    #                    [65, 600], [65, 500], [65, 400], [65, 300], [65, 200], [65, 100], [65, 0],
-    #                    [130, 0], [130, 100], [130, 200], [130, 300], [130, 400], [130, 500], [130, 600]]
-
-    # originele Michella coordinaten
     xy_big_st_coords = [[5, 0], [75, 0], [145, 0],
-    			[5, 107], [75, 107], [145, 107]]
-     			#[5, 209], [75, 209], [145, 209],
-     			#[5, 311], [75, 311], [145, 311],
-     			#[5, 413], [75, 413], [145, 413],
-    			#[5, 515], [75, 515], [145, 515],
-     			#[5, 618], [75, 618], [145, 618],
-                #[260, 618], [330, 618], [400, 618],
-               # [260, 515], [330, 515], [400, 515],
-               # [260, 413], [330, 413], [400, 413],
-               # [260, 311], [330, 311], [400, 311],
-                #[260, 209], [330, 209], [400, 209],
-               # [260, 107], [330, 107], [400, 107],
-               # [260, 0], [330, 0], [400, 0]]
+    			[5, 107], [75, 107], [145, 107],
+     			[5, 209], [75, 209], [145, 209],
+     			[5, 311], [75, 311], [145, 311],
+     			[5, 413], [75, 413], [145, 413],
+    			[5, 515], [75, 515], [145, 515],
+     			[5, 618], [75, 618], [145, 618],
+                [260, 618], [330, 618], [400, 618],
+                [260, 515], [330, 515], [400, 515],
+                [260, 413], [330, 413], [400, 413],
+                [260, 311], [330, 311], [400, 311],
+                [260, 209], [330, 209], [400, 209],
+                [260, 107], [330, 107], [400, 107],
+                [260, 0], [330, 0], [400, 0]]
 
-    st_posnames = ["A_01","A_02","A_03","A_04","A_05","A_06"]
-    # xy_big_st_coords = [[5, 0], [75, 0]]
-    #st_posnames = ["A_01","A_02","A_03","A_04","A_05","A_06","A_07","A_08","A_09","A_10","A_11","A_12","A_13","A_14","A_15","A_16","A_17","A_18","A_19","A_20","A_21", "B_19","B_20","B_21","B_16","B_17","B_18","B_13","B_14","B_15","B_10","B_11","B_12","B_07","B_08","B_09","B_04","B_05","B_06","B_01","B_02","B_03"]
-    #xy_big_st_coords = [[5, 0], [75, 0]]
-    #st_posnames = ["A_01", "A_02"]
-
-
-
-
-     			
-    #xy_big_st_coords = [[5, 2],
-    #			[5, 107],
-    #			[5, 209], 
-    #			[5, 311],  
-    #			[5, 413],
-    #			[5, 515], 
-    #			[5, 618]]
-
-
-                        #dat bredere blok is de xy-pos voor de 2e plakval
-                  
-    
-
-
-    #                    [0, 130], [100, 130], [200, 130], [300, 130], [400, 130],
-    #                    [400, 195], [300, 195], [200, 195], [100, 195], [0, 195],
-    #                    [0, 260], [100, 260], [200, 260], [300, 260], [400, 260]]
-
-
-    # xy_f_calibration = dict (1000 = 12, 2000 = 24, 3000 = 36, 4000 = 48, 5000 = 6000 = 72 )
-
-    # def __int__(self, nr_well_plates, safe_path, safe_temp_path):
-    #
-    #     self.nr_wp = nr_well_plates
-    #     self.safe_path = safe_path
-    #     self.safe_temp_path = safe_temp_path
-
+    st_posnames = ["A_01","A_02","A_03",
+                   "A_04","A_05","A_06",
+                   "A_07","A_08","A_09",
+                   "A_10","A_11","A_12",
+                   "A_13","A_14","A_15",
+                   "A_16","A_17","A_18",
+                   "A_19","A_20","A_21",
+                   "B_19","B_20","B_21",
+                   "B_16","B_17","B_18",
+                   "B_13","B_14","B_15",
+                   "B_10","B_11","B_12",
+                   "B_07","B_08","B_09",
+                   "B_04","B_05","B_06",
+                   "B_01","B_02","B_03"]
     def __init__(self):
         self.comport_list = self.find_comports()
         # self.create_safe_path()
@@ -224,37 +170,13 @@ class Settings:
     def create_safe_path(self):
         try:
             # also create a temp folder for downloaded camera images
-            os.makedirs(self.safe_path, exist_ok=True)
+            #os.makedirs(self.safe_path, exist_ok=True)
+            os.makedirs(self.project_sample_path, exist_ok=True)
             os.makedirs(self.safe_temp_path, exist_ok=True)
         except FileExistsError:
             # directory already exists
             pass
 
-    def check_max_existing_plate_nr(self):
-        max_plt = 0
-        max_plt_apnd = 0
-        pltnr = 0
-        appendstr = self.project_name + "_" + self.sample_name + "_"
-
-        for imf in os.listdir(self.project_sample_path):
-            if imf.endswith("jpg"):
-                pos = imf.rfind("plate_")
-                if pos != -1:
-                    startpos = pos + 6
-                    endpos = len(imf) - 7
-                    pltnr = int(imf[startpos:endpos])
-
-                if appendstr in imf:
-                    if pltnr > max_plt_apnd:
-                        max_plt_apnd = pltnr
-                else:
-                    if pltnr > max_plt:
-                        max_plt = pltnr
-
-        if self.prj_fn_add:
-            max_plt = max_plt_apnd
-
-        return max_plt
 
     def create_project_sample_path(self):
         try:
@@ -300,32 +222,13 @@ class Settings:
         self.ser.write(bytes("G21\n", 'utf-8'))
         # perform homing cycle
 
-
-
-
 class SettingsTab:
 
     def __init__(self, parent, settings):
 
-
-
-        #self.s.sample_name.set(str(datestr))
-
-
-
         # assign settings object to store variables in the app
         self.s = settings
         self.s.create_safe_path()
-
-        # create autosamplename based on date and incremental nr.
-        datestr = date.today()
-        nextnr = 0
-        nextnrstr= str(nextnr).zfill(3)
-        os.path.join(self.s.safe_path, self.s.project_sample_path)
-        for root, dirs, files in os.walk(os.path.join(self.s.safe_path, self.s.project_sample_path), topdown=False):
-            for name in dirs:
-                print(os.path.join(root, name))
-
 
         # row 0
         frame = ttk.Frame(parent, padding="10 10 10 10")
@@ -352,10 +255,12 @@ class SettingsTab:
         spframe.grid(row=1, column=0, sticky=(N, W, E, S))
 
         ttk.Label(spframe, text="Project name: ", padding="5 5 5 5").grid(row=0, column=0, sticky=W)
-        ttk.Label(spframe, text="Sample name: ", padding="5 5 5 5").grid(row=1, column=0, sticky=W)
+        ttk.Label(spframe, text="Date: ", padding="5 5 5 5").grid(row=1, column=0, sticky=W)
+        ttk.Label(spframe, text="sample number: ", padding="5 5 5 5").grid(row=2, column=0, sticky=W)
 
         self.validate_entry_wrapper = (root.register(self.validate_entry), '%P')
 
+        # project name
         self.prj_name = StringVar()
         self.prj_name_entry = ttk.Entry(spframe, textvariable=self.prj_name, validate='key',
                                         validatecommand=self.validate_entry_wrapper)
@@ -366,17 +271,32 @@ class SettingsTab:
             self.upd_prj_name()
         self.prj_name.trace_add("write", callback_upd_prj_name)
 
+        #date
         self.sp_name = StringVar()
         self.sp_name_entry = ttk.Entry(spframe, textvariable=self.sp_name, validate='key',
                                        validatecommand=self.validate_entry_wrapper)
         self.sp_name_entry.grid(row=1, column=1)
-        #self.sp_name.set(self.s.sample_name)
-        self.sp_name.set(datestr)
+        self.sp_name.set(self.s.sample_name)
 
         def callback_upd_sp_name(var, index, mode):
             self.upd_sp_name()
 
         self.sp_name.trace_add("write", callback_upd_sp_name)
+
+        # number
+        self.sp_nr = StringVar()
+        self.sp_nr_entry = ttk.Entry(spframe, textvariable=self.sp_nr, validate='key',
+                                        validatecommand=self.validate_entry_wrapper)
+        self.sp_nr_entry.grid(row=2, column=1)
+        self.sp_nr.set(self.s.sample_nr)
+
+        def callback_upd_sp_nr(var, index, mode):
+            self.upd_sp_nr()
+
+        self.sp_nr.trace_add("write", callback_upd_sp_nr)
+
+
+
 
         self.prj_fn_add = BooleanVar()
         self.prj_fn_add_check = ttk.Checkbutton(spframe,
@@ -384,49 +304,9 @@ class SettingsTab:
                                                 variable=self.prj_fn_add,
                                                 state="True",
                                                 command=self.upd_prjfn_add_check)
-        self.prj_fn_add_check.grid(row=2, column=0, columnspan=2, pady=5, sticky=W)
+        self.prj_fn_add_check.grid(row=3, column=0, columnspan=2, pady=5, sticky=W)
         self.prj_fn_add.set(False)
 
-        # row 2
-        wpframe = ttk.LabelFrame(frame, text="Well-plate settings: ", padding="10 10 10 10")
-        wpframe.grid(column=0, row=2, sticky=(N, W, E, S))
-
-        self.wpnr = IntVar()
-        self.wpnr.set(1)
-        self.s.nr_wp = self.wpnr.get()
-        ttk.Label(wpframe, text="Number of well-plates: ").grid(row=0, column=0, sticky=E)
-        ttk.Radiobutton(wpframe, text="1", variable=self.wpnr, value=1, command=self.upd_wp_nr).grid(row=0, column=1,
-                                                                                                     sticky=NW, padx=3,
-                                                                                                     pady=5)
-        ttk.Radiobutton(wpframe, text="2", variable=self.wpnr, value=2, command=self.upd_wp_nr).grid(row=0, column=2,
-                                                                                                     sticky=NW, padx=3,
-                                                                                                     pady=5)
-        ttk.Radiobutton(wpframe, text="3", variable=self.wpnr, value=3, command=self.upd_wp_nr).grid(row=0, column=3,
-                                                                                                     sticky=NW, padx=3,
-                                                                                                     pady=5)
-        ttk.Radiobutton(wpframe, text="4", variable=self.wpnr, value=4, command=self.upd_wp_nr).grid(row=0, column=4,
-                                                                                                     sticky=NW, padx=3,
-                                                                                                     pady=5)
-
-        self.wptype = IntVar()
-        self.wptype.set(6)
-        self.s.wp_type = self.wptype.get()
-        ttk.Label(wpframe, text="Well-plate type: ").grid(row=1, column=0, sticky=E)
-        ttk.Radiobutton(wpframe, text="6-wells", variable=self.wptype, value=6, command=self.upd_wp_type).grid(row=1,
-                                                                                                               column=1,
-                                                                                                               sticky=NW,
-                                                                                                               padx=3,
-                                                                                                               pady=5)
-        ttk.Radiobutton(wpframe, text="12-wells", variable=self.wptype, value=12, command=self.upd_wp_type).grid(row=1,
-                                                                                                                 column=2,
-                                                                                                                 sticky=NW,
-                                                                                                                 padx=3,
-                                                                                                                 pady=5)
-        ttk.Radiobutton(wpframe, text="24-wells", variable=self.wptype, value=24, command=self.upd_wp_type).grid(row=1,
-                                                                                                                 column=3,
-                                                                                                                 sticky=NW,
-                                                                                                                 padx=3,
-                                                                                                                 pady=5)
 
 
         ###################################################################################
@@ -485,6 +365,10 @@ class SettingsTab:
 
     def upd_sp_name(self):
         self.s.sample_name = str(self.sp_name.get())
+        # print(self.s.sample_name)
+
+    def upd_sp_nr(self):
+        self.s.sample_nr = str(self.sp_nr.get())
         # print(self.s.sample_name)
 
     def upd_prjfn_add_check(self):
@@ -598,7 +482,7 @@ class Stickytrap:
         # reference the settings object
         self.s = settings
         # create the folderstructure if it does not yet exist
-        self.s.create_safe_path()
+        #self.s.create_safe_path()
         self.pbval = 0
 
 
@@ -620,7 +504,6 @@ class Stickytrap:
 
         self.st_coords = self.s.xy_big_st_coords
         self.maxcap = self.s.caps_per_big_st
-        self.pos_names = self.s.st_posnames
         self.x = 0
         self.y = 0
 
@@ -651,7 +534,7 @@ class Stickytrap:
             messagebox.showerror("connection error", "XY-table and/or camera not connected\n"
                                                      "Cannot continue.")
         else:
-
+            self.s.create_safe_path()
             self.pbval = 0
             self.pb['value'] = self.pbval
             self.pb['maximum'] = self.maxcap
@@ -755,8 +638,7 @@ class Stickytrap:
         for i in range(self.maxcap):
             pos_str = "st_pos_" + str(i).zfill(2)
             temp_fn = "temp_" + pos_str + ".jpg"
-            #save2_fn = save_fn + pos_str + ".jpg"
-            save2_fn = save_fn + self.pos_names[i] + ".jpg"
+            save2_fn = save_fn + pos_str + ".jpg"
             os.rename(os.path.join(self.s.safe_temp_path, temp_fn),
                       os.path.join(self.s.project_sample_path, save2_fn))
 
@@ -890,10 +772,10 @@ class Stickytrap:
     def toggle_tab_state(self, tabstate="normal"):
         tabs = self.frame.master.master.tabs()
         self.frame.master.master.tab(tabs[0], state=tabstate)
-        self.frame.master.master.tab(tabs[1], state=tabstate)
+        #self.frame.master.master.tab(tabs[1], state=tabstate)
         # do not toggle well plate tab 2
+        self.frame.master.master.tab(tabs[2], state=tabstate)
         self.frame.master.master.tab(tabs[3], state=tabstate)
-        self.frame.master.master.tab(tabs[4], state=tabstate)
 
 class Move:
 
@@ -997,7 +879,6 @@ class Move:
         print(bytes(gcode, 'utf-8'))
         self.console_line += 1
 
-
 class Help:
 
     def __init__(self, parent):
@@ -1024,372 +905,6 @@ class Help:
 
     def open_url(self, url):
         webbrowser.open_new_tab(url)
-
-class Wellplate:
-
-    def __init__(self, parent, settings):
-        # reference the settings object
-        self.s = settings
-        # create the folderstructure if it does not yet exist
-        self.s.create_safe_path()
-
-        self.pbval = 0
-        self.maxcap = None
-        self.pbmax = None
-        self.wp_coords = None
-        self.wp_type = self.s.wp_type
-        self.nr_wp = self.s.nr_wp
-        self.project_name = self.s.project_name
-        self.sample_name = self.s.sample_name
-        self.project_sample_path = self.s.project_sample_path
-        self.caps_perwp = None
-        self.nr_crops = None
-        self.plate_start_nr = 1
-
-        self.frame = ttk.Frame(parent, padding="3 3 3 3")
-        self.frame.grid(column=0, row=0, sticky=(N, W, E, S))
-
-        self.pb = ttk.Progressbar(self.frame, orient=HORIZONTAL, length=400, mode='determinate', maximum=self.pbmax)
-        self.pb['value'] = 0
-        self.pb.grid(row=2, column=0)
-
-        #TODO Set state to disabled for now to prevent wellplate imaging, fix later remove tabs in stickytrapimager.
-        self.strstp_button = Button(self.frame, text='Start imaging', command=self.start, state='disabled')
-        self.strstp_button.grid(row=2, column=1, sticky=E)
-
-        self.wellpic_list = self.create_empty_wellpic_list()
-        self.update_wp_grid(self.wellpic_list)
-
-
-    def start(self):
-
-        if not self.s.cam_connected or not self.s.xy_connected:
-            messagebox.showerror("connection error", "XY-table and/or camera not connected\n"
-                                                     "Cannot continue.")
-        else:
-
-            self.pbval = 0
-            self.pb['value'] = self.pbval
-            self.strstp_button.configure(text='Stop', command=self.stop)
-
-            global interrupt
-            interrupt = False
-
-            # store some vars locally to make operation safe for changes in settings tab
-            self.wp_type = self.s.wp_type
-            self.nr_wp = self.s.nr_wp
-            self.project_name = self.s.project_name
-            self.sample_name = self.s.sample_name
-            self.project_sample_path = os.path.join(self.s.safe_path, self.project_name, self.sample_name)
-
-            # # update the picture grid with empty pictures
-            # self.wellpic_list = self.create_empty_wellpic_list()
-            # self.update_wp_grid(self.wellpic_list)
-
-            # create the folders
-            self.s.create_project_sample_path()
-
-            if self.wp_type == 6:
-                self.maxcap = int(self.s.caps_perwp_6w * self.s.nr_wp)
-                self.pb['maximum'] = self.maxcap
-                self.wp_coords = self.s.xy_6w_coords
-                self.caps_perwp = self.s.caps_perwp_6w
-                self.nr_crops = self.s.nr_crops_6w
-
-            elif self.wp_type == 12:
-                self.maxcap = int(self.s.caps_perwp_12w * self.s.nr_wp)
-                self.pb['maximum'] = self.maxcap
-                self.wp_coords = self.s.xy_12w_coords
-                self.caps_perwp = self.s.caps_perwp_12w
-                self.nr_crops = self.s.nr_crops_12w
-
-            elif self.wp_type == 24:
-                self.maxcap = int(self.s.caps_perwp_24w * self.s.nr_wp)
-                self.pb['maximum'] = self.maxcap
-                self.wp_coords = self.s.xy_24w_coords
-                self.caps_perwp = self.s.caps_perwp_24w
-                self.nr_crops = self.s.nr_crops_24w
-
-            elif self.wp_type == 48:
-                self.maxcap = int(self.s.caps_perwp_48w * self.s.nr_wp)
-                self.pb['maximum'] = self.maxcap
-                self.wp_coords = self.s.xy_48w_coords
-                self.caps_perwp = self.s.caps_perwp_48w
-                self.nr_crops = self.s.nr_crops_48w
-
-            if self.s.append_files:
-                self.plate_start_nr += self.s.check_max_existing_plate_nr()
-
-            print("wptype: " + str(self.s.wp_type))
-            print("nrwp: " + str(self.s.nr_wp))
-            print("maxcap: " + str(self.maxcap))
-            print(self.s.sample_name)
-            # invoke the capturenext function via root.after to allow the eventloop to update the interface
-            self.toggle_tab_state("disabled")
-            root.after(1, self.capture_next)
-
-    def stop(self):
-
-        self.strstp_button.configure(text='Start imaging', command=self.start)
-        self.update_wp_grid(self.wellpic_list)
-        global interrupt
-        interrupt = True
-        self.pb['value'] = 0
-        self.home_xy()
-        self.toggle_tab_state("normal")
-
-    def capture_next(self, nextcap=0):
-
-        global interrupt
-        if interrupt:
-            # home the table
-            self.home_xy()
-            self.toggle_tab_state("normal")
-            return
-
-        if nextcap < self.maxcap:
-            self.pbval += 1
-            self.pb['value'] = self.pbval
-            x = self.wp_coords[nextcap][0]
-            y = self.wp_coords[nextcap][1]
-            # root.after(1000)
-            print("nextcap: " + str(nextcap) + " xy" + str(x) + " " + str(y))
-            self.move_and_capture(x, y, self.s.xy_f_speed)
-            self.crop_save_wells(nextcap, self.plate_start_nr)
-
-        else:
-            self.pb['value'] = self.pbmax
-            print("nextcap: " + str(nextcap))
-            self.strstp_button.configure(text='Start imaging', command=self.start)
-            # home the xy table
-            self.home_xy()
-            # ser.write(bytes("G28\n", 'utf-8'))
-            self.update_wp_grid(self.wellpic_list)
-            interrupt = True
-            self.toggle_tab_state("normal")
-            return
-
-        root.after(1, lambda: self.capture_next(nextcap + 1))
-
-    def home_xy(self):
-        self.s.ser.write(bytes("G28\n", 'utf-8'))
-
-    def move_and_capture(self, x, y, f):
-
-        self.goto_position(x, y, f)
-        time.sleep(self.s.cam.calc_movement_delay(x, y, f))
-        self.capture_image("temp_cap.jpg")
-        # self.crop_save_wells_old(1, 12)
-        # take the pic
-
-    def crop_save_wells(self, capnr, plate_start=1):
-
-        temp_image = cv2.imread(os.path.join(self.s.safe_temp_path, "temp_cap.jpg"))
-        temp_image = cv2.rotate(temp_image, cv2.ROTATE_180)
-
-        if self.wp_type == 6:
-            well_labels = ["A1", "A2", "A3",
-                           "B1", "B2", "B3"]
-            wp_nr_str = "plate_" + str(int(capnr / self.caps_perwp) + plate_start).zfill(2)
-
-            # crop
-            well_nr = capnr % self.caps_perwp
-            crop = temp_image[2300:5200, 800:3700]
-            save_fn = wp_nr_str + "_" + well_labels[well_nr] + ".jpg"
-            # add project en sample name to the filename if checked
-            if self.s.prj_fn_add:
-                save_fn = self.s.project_name + "_" + self.s.sample_name + "_" + save_fn
-            cv2.imwrite(os.path.join(self.project_sample_path, save_fn), crop)
-            wp_thumb = cv2.resize(crop, [100, 100], cv2.INTER_NEAREST)
-            cv2.imwrite(os.path.join(self.s.safe_temp_path, save_fn), wp_thumb)
-            self.wellpic_list[capnr] = os.path.join(self.s.safe_temp_path, save_fn)
-
-        if self.wp_type == 12:
-            well_labels = ["A1", "A2", "A3", "A4",
-                           "B1", "B2", "B3", "B4",
-                           "C1", "C2", "C3", "C4"]
-            wp_nr_str = "plate_" + str(int(capnr / self.caps_perwp) + plate_start).zfill(2)
-
-            # crop 1
-            well_nr = (capnr % self.caps_perwp) * 2
-            picnr = capnr * 2
-            crop = temp_image[2760:4610, 575:2425]
-            save_fn = wp_nr_str + "_" + well_labels[well_nr] + ".jpg"
-            # add project en sample name to the filename if checked
-            if self.s.prj_fn_add:
-                save_fn = self.s.project_name + "_" + self.s.sample_name + "_" + save_fn
-            cv2.imwrite(os.path.join(self.project_sample_path, save_fn), crop)
-            wp_thumb = cv2.resize(crop, [75, 75], cv2.INTER_NEAREST)
-            cv2.imwrite(os.path.join(self.s.safe_temp_path, save_fn), wp_thumb)
-            self.wellpic_list[picnr] = os.path.join(self.s.safe_temp_path, save_fn)
-
-            print("crop1 len: " + str(len(self.wellpic_list)) + " picnr: " + str(picnr))
-
-            # crop 2
-            well_nr = (capnr % self.caps_perwp) * 2 + 1
-            picnr = capnr * 2 + 1
-            crop = temp_image[2760:4610, 2425:4275]
-            save_fn = wp_nr_str + "_" + well_labels[well_nr] + ".jpg"
-            # add project en sample name to the filename if checked
-            if self.s.prj_fn_add:
-                save_fn = self.s.project_name + "_" + self.s.sample_name + "_" + save_fn
-            cv2.imwrite(os.path.join(self.project_sample_path, save_fn), crop)
-            wp_thumb = cv2.resize(crop, [75, 75], cv2.INTER_NEAREST)
-            cv2.imwrite(os.path.join(self.s.safe_temp_path, save_fn), wp_thumb)
-            self.wellpic_list[picnr] = os.path.join(self.s.safe_temp_path, save_fn)
-            print("crop2 len: " + str(len(self.wellpic_list)) + " picnr: " + str(picnr))
-
-        if self.wp_type == 24:
-            # TODO quickfix, very unelegant way of generating the labels. fix later when there is time.
-            well_labels = ["A1", "A2", "B1", "B2", "A3", "A4", "B3", "B4", "A5", "A6", "B5", "B6",
-                           "C1", "C2", "D1", "D2", "C3", "C4", "D3", "D4", "C5", "C6", "D5", "D6",
-                           "A1", "A2", "B1", "B2", "A3", "A4", "B3", "B4", "A5", "A6", "B5", "B6",
-                           "C1", "C2", "D1", "D2", "C3", "C4", "D3", "D4", "C5", "C6", "D5", "D6",
-                           "A1", "A2", "B1", "B2", "A3", "A4", "B3", "B4", "A5", "A6", "B5", "B6",
-                           "C1", "C2", "D1", "D2", "C3", "C4", "D3", "D4", "C5", "C6", "D5", "D6",
-                           "A1", "A2", "B1", "B2", "A3", "A4", "B3", "B4", "A5", "A6", "B5", "B6",
-                           "C1", "C2", "D1", "D2", "C3", "C4", "D3", "D4", "C5", "C6", "D5", "D6"]
-
-            pic_pos_lst = [0, 1, 6, 7, 2, 3, 8, 9, 4, 5, 10, 11, 12, 13, 18, 19, 14, 15, 20, 21, 16, 17, 22, 23,
-                           24, 25, 30, 31, 26, 27, 32, 33, 28, 29, 34, 35, 36, 37, 42, 43, 38, 39, 44, 45, 40, 41, 46,
-                           47,
-                           48, 49, 54, 55, 50, 51, 56, 57, 52, 53, 58, 59, 60, 61, 66, 67, 62, 63, 68, 69, 64, 65, 70,
-                           71,
-                           72, 73, 78, 79, 74, 75, 80, 81, 76, 77, 82, 83, 84, 85, 90, 91, 86, 87, 92, 93, 88, 89, 94,
-                           95]
-
-            wp_nr_str = "plate_" + str(int(capnr / self.caps_perwp) + plate_start).zfill(2)
-
-            for cropnr in range(4):
-                pos = capnr * 4 + cropnr
-                gridpos = pic_pos_lst[pos]
-                well_lbl = well_labels[pos]
-
-                print("cropnr: " + str(cropnr) + ", capnr: " + str(capnr) + ", pos: " + str(pos) + ", gridpos: " + str(
-                    gridpos))
-
-                if cropnr == 0:
-                    # B/D - 1/3/5
-                    # crop = temp_image[2350:3700, 1000:2350]
-                    crop = temp_image[2350:3700, 950:2300]
-                elif cropnr == 1:
-                    # B/D - 2/4/6
-                    # crop = temp_image[2350:3700, 2350:3700]
-                    crop = temp_image[2350:3700, 2300:3650]
-                elif cropnr == 2:
-                    # A/C - 1/3/5
-                    # crop = temp_image[3700:5050, 1000:2350]
-                    crop = temp_image[3700:5050, 950:2300]
-                elif cropnr == 3:
-                    # A/C - 2/4/6
-                    # crop = temp_image[3700:5050, 2350:3700]
-                    crop = temp_image[3700:5050, 2300:3650]
-
-                save_fn = wp_nr_str + "_" + well_lbl + ".jpg"
-                # add project en sample name to the filename if checked
-                if self.s.prj_fn_add:
-                    save_fn = self.s.project_name + "_" + self.s.sample_name + "_" + save_fn
-                cv2.imwrite(os.path.join(self.project_sample_path, save_fn), crop)
-                wp_thumb = cv2.resize(crop, [50, 50], cv2.INTER_NEAREST)
-                cv2.imwrite(os.path.join(self.s.safe_temp_path, save_fn), wp_thumb)
-                self.wellpic_list[gridpos] = os.path.join(self.s.safe_temp_path, save_fn)
-                # print("crop len: " + str(len(self.wellpic_list)) + " picnr: " + str(gridpos), )
-            root.after(1)
-
-    def create_empty_wellpic_list(self):
-
-        wellpic_list = list()
-        wellctr = self.s.nr_wp * self.s.wp_type
-
-        for i in range(wellctr):
-            if self.wp_type == 6:
-                wellpic_list.append("assets/wp/wp6_emptywell.png")
-            elif self.wp_type == 12:
-                wellpic_list.append("assets/wp/wp12_emptywell.png")
-            elif self.wp_type == 24:
-                wellpic_list.append("assets/wp/wp24_emptywell.png")
-            elif self.wp_type == 48:
-                wellpic_list.append("assets/wp/wp48_emptywell.png")
-
-        return wellpic_list
-
-    def update_wp_grid(self, wellpic_list):
-        pic_ctr = 0
-        wp_layout = ttk.Frame(self.frame, padding="3 3 3 3")
-        wp_layout.grid(column=0, row=0, sticky=(N, W, E, S))
-        root.update_idletasks()
-
-        if self.wp_type == 6:
-            rows = ["A", "B"]
-            cols = ["1", "2", "3"]
-        elif self.wp_type == 12:
-            rows = ["A", "B", "C"]
-            cols = ["1", "2", "3", " 4"]
-        elif self.wp_type == 24:
-            rows = ["A", "B", "C", "D"]
-            cols = ["1", "2", "3", " 4", "5", "6"]
-        elif self.wp_type == 48:
-            rows = ["A", "B", "C", "D", "E", "F"]
-            cols = ["1", "2", "3", "4", "5", "6", "7", "8"]
-
-        r = 0
-        c = 0
-        for i in range(self.nr_wp):
-            # label plates
-            plate_string = "position: " + str(i + 1)
-            ttk.Label(wp_layout, text=plate_string).grid(row=r, column=c, pady=10)
-            # r += 1
-            # row header with column titles
-            c1 = 1
-            for col in cols:
-                ttk.Label(wp_layout, text=col).grid(row=r, column=c1)
-                c1 += 1
-            r += 1
-            for row in rows:
-                # header
-                ttk.Label(wp_layout, text=row).grid(row=r, column=c)
-                c += 1
-                for col in cols:
-                    fname = wellpic_list[pic_ctr]
-                    pimg = ImageTk.PhotoImage(Image.open(fname))
-                    label = ttk.Label(wp_layout, image=pimg)
-                    label.image = pimg
-                    label.grid(row=r, column=c)
-                    pic_ctr += 1
-                    # print("## pictr: " + str(pic_ctr) + " " + fname)
-                    c += 1
-                c = 0
-                r += 1
-
-    def goto_position(self, x, y, f):
-
-        x_coord = str(x)
-        y_coord = str(y)
-        f_val = str(f)
-        gcode = 'G0 X' + x_coord + ' Y' + y_coord + ' F' + f_val + '\n'
-        # write out gcode to xytabel serial connection
-        # ser.write(bytes(gcode, 'utf-8'))
-        self.s.ser.write(bytes(gcode, 'utf-8'))
-        print(gcode)
-
-
-    def capture_image(self, picname):
-        # take te picture
-        file = self.s.cam.capture_and_get()
-        file.save(os.path.join(self.s.safe_temp_path, picname))
-
-        # trick to empty the camera cue before nextaction (see github thread from entangle devloper .....).
-        # Prevents camera crashes.
-        self.s.cam.empty_cam_cue()
-
-    def toggle_tab_state(self, tabstate="normal"):
-        tabs = self.frame.master.master.tabs()
-        self.frame.master.master.tab(tabs[0], state=tabstate)
-        # do not toggle well plate tab 1
-        self.frame.master.master.tab(tabs[2], state=tabstate)
-        self.frame.master.master.tab(tabs[3], state=tabstate)
-        self.frame.master.master.tab(tabs[4], state=tabstate)
-
 
 
 if __name__ == '__main__':
