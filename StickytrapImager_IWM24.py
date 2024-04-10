@@ -42,6 +42,7 @@ class Main:
         def update_tabs():
             #self.Wellplate = Wellplate(wps, settings)
             self.Stickytrap = Stickytrap(st, settings)
+
         tabcontrol.bind('<<NotebookTabChanged>>', lambda e: update_tabs())
         tabcontrol.grid(column=0, row=0)
 
@@ -65,7 +66,7 @@ class Settings:
     safe_path = os.path.join(Path.home(), "InsectImager/data/")
     safe_temp_path = os.path.join(safe_path, ".tempfiles/")
 
-    project_name = "0033_RUG_ML"   # project name
+    project_name = "0040_IWM24-mb"   # project name
     sample_name = str(date.today())  # sample name
     sample_nr =""
     project_sample_path = ""
@@ -115,55 +116,102 @@ class Settings:
     nr_crops_st = 1
     xy_st_coords = [[300, 40],[300, 85],[300, 130]]
 
-    caps_per_big_st = 42
+    caps_per_big_st = 16
     #1 aangepast op 2023-0116 --> 1e baan A plakplaat 5 mm naar rechts om overlap te genereren.
     #2 B plakplaat 2 millimeter hoger zodat er minder gemist wordt aan de onderkant.
     #xy_big_st_coords = [[5, 0], [75, 0]]
-    xy_big_st_coords = [[5, 0], [77, 0], [149, 0],
-                        [5, 102], [77, 102], [149, 102],
-                        [5, 204], [77, 204], [149, 204],
-                        [5, 306], [77, 306], [149, 306],
-                        [5, 408], [77, 408], [149, 408],
-                        [5, 510], [77, 510], [149, 510],
-                        [5, 613], [77, 613], [149, 613],
-                [266, 618], [338, 618], [410, 618],
-                [266, 515], [338, 515], [410, 515],
-                [266, 413], [338, 413], [410, 413],
-                [266, 311], [338, 311], [410, 311],
-                [266, 209], [338, 209], [410, 209],
-                [266, 107], [338, 107], [410, 107],
-                [266, 0], [338, 0], [410, 0]]
-
+    xy_big_st_coords = [[47, 8], [47, 61],
+                        [74, 8], [74, 61],
+                        [134, 8], [134, 61],
+                        [161, 8], [161, 61],
+                        [47, 136], [47, 189],
+                        [74, 136], [74, 189],
+                        [134, 136], [134, 189],
+                        [161, 136], [161, 189]]
+                        #[5, 306], [77, 306], [149, 306],
+                       # [5, 408], [77, 408], [149, 408],
+                       # [5, 510], [77, 510], [149, 510],
+                       # [5, 613], [77, 613], [149, 613],
+              #  [266, 618], [338, 618], [410, 618],
+              #  [266, 515], [338, 515], [410, 515],
+              #  [266, 413], [338, 413], [410, 413],
+              #  [266, 311], [338, 311], [410, 311],
+             #   [266, 209], [338, 209], [410, 209],
+             #   [266, 107], [338, 107], [410, 107],
+             #   [266, 0], [338, 0], [410, 0]]
+#
     #st_posnames = ["A_01", "A_02"]
-    st_posnames = ["A_01","A_02","A_03",
-                   "A_04","A_05","A_06",
-                   "A_07","A_08","A_09",
-                   "A_10","A_11","A_12",
-                   "A_13","A_14","A_15",
-                   "A_16","A_17","A_18",
-                   "A_19","A_20","A_21",
-                   "B_19","B_20","B_21",
-                   "B_16","B_17","B_18",
-                   "B_13","B_14","B_15",
-                   "B_10","B_11","B_12",
-                   "B_07","B_08","B_09",
-                   "B_04","B_05","B_06",
-                   "B_01","B_02","B_03"]
+    st_posnames = ["p1_ab12", "p1_ab34",
+                   "p1_bc12", "p1_bc34",
+                   "p2_ab12", "p2_ab34",
+                   "p2_bc12", "p2_bc34",
+                   "p3_ab12", "p3_ab34",
+                   "p3_bc12", "p3_bc34",
+                   "p4_ab12", "p4_ab34",
+                   "p4_bc12", "p4_bc34"]
+                   # "A_10","A_11","A_12",
+                   # "A_13","A_14","A_15",
+                   # "A_16","A_17","A_18",
+                   # "A_19","A_20","A_21",
+                   # "B_19","B_20","B_21",
+                   # "B_16","B_17","B_18",
+                   # "B_13","B_14","B_15",
+                   # "B_10","B_11","B_12",
+                   # "B_07","B_08","B_09",
+                   # "B_04","B_05","B_06",
+                   # "B_01","B_02","B_03"]
 
 
     def __init__(self):
         self.comport_list = self.find_comports()
         # self.create_safe_path()
 
+        # # check if the sample folder (date of today) exists and create if not.
+        # subdirectories = []
+        # for dirpath, dirnames, filenames in os.walk(os.path.join(self.safe_path, self.project_name)):
+        #     subdirectories.append(dirnames)
+        #
+        # print(subdirectories)
+        #
+        # if self.sample_name not in subdirectories:
+        #     print ("do I get here")
+        #     try:
+        #         os.makedirs(os.path.join(self.safe_path, self.project_name, self.sample_name), exist_ok=True)
+        #     except FileExistsError:
+        #         # directory already exists
+        #         pass
+        #
+        # # create autosamplename based on date and incremental nr.
+        # subdirectories = []
+        # for dirpath, dirnames, filenames in os.walk(os.path.join(self.safe_path, self.project_name, self.sample_name)):
+        #     # Append the current subdirectory to the list
+        #     subdirectories.append(dirnames)
+        #
+        # print(subdirectories)
+        # subdir_string = subdirectories[0]
+        # subdir_numbers = [int(num) for num in subdir_string if num.isdigit()]
+        #
+        # # check if numbered subdir exists, if not create 001, if yes increment and create
+        # if len(subdir_numbers) == 0:
+        #     self.sample_nr = "001"
+        #
+        # else:
+        #     s_nr = max(subdir_numbers) + 1
+        #     self.sample_nr = str(s_nr).zfill(3)
+        #
+        # self.project_sample_path = os.path.join(self.safe_path, self.project_name, self.sample_name, self.sample_nr)
+        # print(self.project_sample_path)
+
+    def increment_sample(self):
         # check if the sample folder (date of today) exists and create if not.
         subdirectories = []
         for dirpath, dirnames, filenames in os.walk(os.path.join(self.safe_path, self.project_name)):
             subdirectories.append(dirnames)
 
-        print(subdirectories)
+        #print(subdirectories)
 
         if self.sample_name not in subdirectories:
-            print ("do I get here")
+            print("do I get here")
             try:
                 os.makedirs(os.path.join(self.safe_path, self.project_name, self.sample_name), exist_ok=True)
             except FileExistsError:
@@ -178,6 +226,10 @@ class Settings:
 
         print(subdirectories)
         subdir_string = subdirectories[0]
+        subdir_string.sort()
+        #print(subdir_string)
+        #print (len(subdir_string))
+        #print (subdir_string[len(subdir_string)-1])
         subdir_numbers = [int(num) for num in subdir_string if num.isdigit()]
 
         # check if numbered subdir exists, if not create 001, if yes increment and create
@@ -185,12 +237,20 @@ class Settings:
             self.sample_nr = "001"
 
         else:
-            s_nr = max(subdir_numbers) + 1
+            print (os.listdir(os.path.join(self.safe_path, self.project_name, self.sample_name, subdir_string[len(subdir_string)-1])))
+            print (len(os.listdir(os.path.join(self.safe_path, self.project_name, self.sample_name, subdir_string[len(subdir_string)-1]))))
+            ## chec if S_nr is an empty dir, if zo use it, otherwise increment
+            if len(os.listdir(os.path.join(self.safe_path, self.project_name, self.sample_name, subdir_string[len(subdir_string)-1]))) == 0:
+                print ("empty dir, use it")
+                s_nr = max(subdir_numbers)
+            else:
+                s_nr = max(subdir_numbers) + 1
             self.sample_nr = str(s_nr).zfill(3)
+
 
         self.project_sample_path = os.path.join(self.safe_path, self.project_name, self.sample_name, self.sample_nr)
         print(self.project_sample_path)
-
+        self.create_safe_path()
 
     def create_safe_path(self):
         try:
@@ -253,7 +313,8 @@ class SettingsTab:
 
         # assign settings object to store variables in the app
         self.s = settings
-        self.s.create_safe_path()
+        #self.s.create_safe_path()
+        self.s.increment_sample()
 
         # row 0
         frame = ttk.Frame(parent, padding="10 10 10 10")
@@ -569,7 +630,7 @@ class Stickytrap:
         interrupt = True
         self.pb['value'] = 0
         self.home_xy()
-        self.toggle_tab_state("normal")
+        #self.toggle_tab_state("normal")
 
     def capture_next(self, nextcap=0):
 
@@ -586,6 +647,7 @@ class Stickytrap:
             self.move_and_capture(self.x, self.y, self.s.xy_f_speed, tempfn)
             self.crop_save_temp_st(self.ctr, tempfn)
             self.ctr += 1
+            root.after(1, lambda: self.capture_next(nextcap + 1))
 
         else:
             #self.stitch_st()
@@ -598,10 +660,10 @@ class Stickytrap:
             self.update_st_grid()
 
             interrupt = True
-            self.toggle_tab_state("normal")
+            #self.toggle_tab_state("normal")
             return
 
-        root.after(1, lambda: self.capture_next(nextcap + 1))
+        #root.after(1, lambda: self.capture_next(nextcap + 1))
 
     def home_xy(self):
         self.s.ser.write(bytes("G28\n", 'utf-8'))
@@ -630,7 +692,7 @@ class Stickytrap:
 
         #cv2.imwrite(os.path.join(self.s.project_sample_path, save_fn), crop)
         self.stpic_list.append(os.path.join(self.s.safe_temp_path, tempfn))
-        st_thumb = cv2.resize(crop, [100, 75], cv2.INTER_NEAREST)
+        st_thumb = cv2.resize(crop, [160, 120], cv2.INTER_NEAREST)
         cv2.imwrite(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn), st_thumb)
         self.stthumb_list.append(os.path.join(self.s.safe_temp_path, "thumb_" + save_fn))
 
@@ -701,10 +763,10 @@ class Stickytrap:
 
         #rows = ["A", "B", "C", "D", "E"]
         #cols = ["1", "2", "3", " 4", "5"]
-        rows = ["1", "2", "3", "4", "5", "6", "7"]
-        cols = ["A", "B", "C"]
-        nr_rows = 3
-        nr_cols = 6
+        rows = ["1 (1-2)", "2 (3-4)", "3 (1-2)", "4 (3-4)"]
+        cols = ["a (A-B)", "b (B-C)", "c (A-B)", " d (B-C)"]
+        nr_rows = 4
+        nr_cols = 4
 
         r = 0
         c = 0
